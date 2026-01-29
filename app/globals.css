@@ -64,6 +64,16 @@ body {
   overflow: hidden;
 }
 
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Safe area insets for notched devices */
 @supports (padding: max(0px)) {
   body {

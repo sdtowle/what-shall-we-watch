@@ -47,7 +47,7 @@ export interface TMDBResponse<T> {
 
 export type Mode = 'food' | 'freetime' | null;
 
-export const FOOD_GENRES = [35, 10764, 16, 10767]; // Comedy, Reality, Animation, Talk
+export const FOOD_GENRES = [35, 10764, 16]; // Comedy, Reality, Animation
 export const ALL_GENRES = [
   { id: 35, name: 'Comedy' },
   { id: 18, name: 'Drama' },
@@ -58,7 +58,6 @@ export const ALL_GENRES = [
   { id: 99, name: 'Documentary' },
   { id: 16, name: 'Animation' },
   { id: 10764, name: 'Reality' },
-  { id: 10767, name: 'Talk' },
 ];
 
 export const MIN_RATING = 6.0;

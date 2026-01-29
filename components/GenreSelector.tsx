@@ -20,11 +20,11 @@ export default function GenreSelector({
       : ALL_GENRES;
 
   return (
-    <div className="flex flex-wrap gap-2 justify-center">
+    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
       <button
         onClick={() => onChange(null)}
         className={`
-          px-3 py-1.5 rounded-full text-sm font-medium
+          px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap shrink-0
           transition-all duration-200
           ${
             selectedGenre === null
@@ -40,7 +40,7 @@ export default function GenreSelector({
           key={genre.id}
           onClick={() => onChange(genre.id)}
           className={`
-            px-3 py-1.5 rounded-full text-sm font-medium
+            px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap shrink-0
             transition-all duration-200
             ${
               selectedGenre === genre.id
