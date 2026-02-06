@@ -1,11 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense, useRef } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Show, Mode } from '@/lib/types';
+import { useToast } from '@/contexts/ToastContext';
+import { useAuth } from '@/contexts/AuthContext';
 import ShowCard from '@/components/ShowCard';
 import ModeSelector from '@/components/ModeSelector';
 import GenreSelector from '@/components/GenreSelector';
 import SpinButton from '@/components/SpinButton';
+
+function LoginToastHandler() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { showToast } = useToast();
+  const { refreshSession } = useAuth();
+  const hasHandled = useRef(false);
+
+  useEffect(() => {
+    if (searchParams.get('loggedIn') === 'true' && !hasHandled.current) {
+      hasHandled.current = true;
+      refreshSession();
+      showToast('You have been logged in successfully');
+      router.replace('/', { scroll: false });
+    }
+  }, [searchParams, showToast, router, refreshSession]);
+
+  return null;
+}
 
 export default function Home() {
   const [show, setShow] = useState<Show | null>(null);
@@ -51,6 +73,9 @@ export default function Home() {
 
   return (
     <main className="min-h-screen py-8 px-4">
+      <Suspense fallback={null}>
+        <LoginToastHandler />
+      </Suspense>
       <div className="max-w-2xl mx-auto space-y-8">
         {/* Header */}
         <header className="text-center space-y-2">

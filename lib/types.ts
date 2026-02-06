@@ -61,3 +61,15 @@ export const ALL_GENRES = [
 ];
 
 export const MIN_RATING = 6.0;
+
+// Auth types
+export interface AuthFormState {
+  error?: string;
+  success?: string;
+  fieldErrors?: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    password?: string;
+  };
+}
