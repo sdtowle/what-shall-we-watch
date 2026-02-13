@@ -46,7 +46,7 @@ export async function register(
 
   const supabase = await createServerClient();
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: sanitizedEmail,
     password,
     options: {
@@ -62,6 +62,12 @@ export async function register(
       return { error: 'An account with this email already exists' };
     }
     return { error: 'Something went wrong. Please try again.' };
+  }
+
+  // Supabase returns a user with an empty identities array (instead of an error)
+  // when the email is already registered and email confirmation is enabled
+  if (data.user && data.user.identities?.length === 0) {
+    return { error: 'An account with this email already exists' };
   }
 
   redirect('/login?registered=true');
