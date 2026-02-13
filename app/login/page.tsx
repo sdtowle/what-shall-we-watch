@@ -27,12 +27,19 @@ function SubmitButton() {
 function SuccessMessage() {
   const searchParams = useSearchParams();
   const justRegistered = searchParams.get('registered') === 'true';
+  const passwordReset = searchParams.get('passwordReset') === 'true';
 
-  if (!justRegistered) return null;
+  const message = justRegistered
+    ? 'Account created successfully. Please check your email to confirm your account before logging in.'
+    : passwordReset
+    ? 'Password updated successfully. Please log in with your new password.'
+    : null;
+
+  if (!message) return null;
 
   return (
     <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-500 text-sm">
-      Account created successfully. Please check your email to confirm your account before logging in.
+      {message}
     </div>
   );
 }
@@ -103,6 +110,12 @@ function LoginForm() {
       />
 
       <SubmitButton />
+
+      <div className="text-right mt-1">
+        <Link href="/reset-password" className="text-xs text-text-muted hover:text-primary transition-colors">
+          Forgot password?
+        </Link>
+      </div>
     </form>
   );
 }

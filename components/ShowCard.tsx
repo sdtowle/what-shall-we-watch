@@ -1,13 +1,37 @@
 'use client';
 
+import { useState } from 'react';
 import { Show } from '@/lib/types';
 import TrendingBadge from './TrendingBadge';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
+import { addToWatchlist } from '@/app/watchlist/actions';
 
 interface ShowCardProps {
   show: Show;
 }
 
 export default function ShowCard({ show }: ShowCardProps) {
+  const { user } = useAuth();
+  const { showToast } = useToast();
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = async () => {
+    if (!user) {
+      showToast('Log in to save shows to your watchlist', 'info');
+      return;
+    }
+    setSaving(true);
+    const result = await addToWatchlist(show.id, show.name, show.poster_path);
+    if (result.success) {
+      setSaved(true);
+      showToast(`"${show.name}" added to watchlist`);
+    } else {
+      showToast(result.error || 'Failed to save show', 'error');
+    }
+    setSaving(false);
+  };
   const posterUrl = show.poster_path
     ? `https://image.tmdb.org/t/p/w500${show.poster_path}`
     : null;
@@ -81,6 +105,33 @@ export default function ShowCard({ show }: ShowCardProps) {
             <span>{show.number_of_seasons} season{show.number_of_seasons !== 1 ? 's' : ''}</span>
             {avgRuntime && <span>{avgRuntime}m/ep</span>}
           </div>
+
+          <button
+            onClick={handleSave}
+            disabled={saving || saved}
+            className="mt-1 flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
+          >
+            {saved ? (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Saved
+              </>
+            ) : saving ? (
+              <>
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                </svg>
+                Save to Watchlist
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>

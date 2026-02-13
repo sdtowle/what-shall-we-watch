@@ -62,6 +62,33 @@ export const ALL_GENRES = [
 
 export const MIN_RATING = 6.0;
 
+// Watch provider types
+export interface WatchProvider {
+  provider_id: number;
+  provider_name: string;
+  logo_path: string;
+}
+
+export interface TMDBWatchProvidersResponse {
+  id: number;
+  results: Record<string, {
+    link?: string;
+    flatrate?: WatchProvider[];
+    rent?: WatchProvider[];
+    buy?: WatchProvider[];
+  }>;
+}
+
+export interface EnrichedShowData {
+  overview: string;
+  vote_average: number;
+  first_air_date: string;
+  genres: Genre[];
+  number_of_seasons: number;
+  episode_run_time: number[];
+  providers: WatchProvider[];
+}
+
 // Auth types
 export interface AuthFormState {
   error?: string;

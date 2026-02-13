@@ -24,12 +24,20 @@ export function Header() {
           {loading ? (
             <div className="h-5 w-20 bg-text-muted/20 rounded animate-pulse" />
           ) : user ? (
-            <button
-              onClick={handleSignOut}
-              className="text-sm text-text-muted hover:text-primary transition-colors"
-            >
-              Logout
-            </button>
+            <>
+              <Link
+                href="/watchlist"
+                className="text-sm text-text-muted hover:text-primary transition-colors"
+              >
+                Watchlist
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="text-sm text-text-muted hover:text-primary transition-colors"
+              >
+                Logout
+              </button>
+            </>
           ) : (
             <>
               <Link

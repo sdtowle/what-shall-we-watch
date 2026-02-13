@@ -1,4 +1,4 @@
-import { TMDBShowBasic, TMDBShowDetails, TMDBResponse, Show, FOOD_GENRES, MIN_RATING, Mode } from './types';
+import { TMDBShowBasic, TMDBShowDetails, TMDBResponse, TMDBWatchProvidersResponse, EnrichedShowData, Show, FOOD_GENRES, MIN_RATING, Mode } from './types';
 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
@@ -115,4 +115,32 @@ export async function getRandomShow(
 export async function getTrendingIds(): Promise<Set<number>> {
   const trending = await getTrendingShows();
   return new Set(trending.map(show => show.id));
+}
+
+export async function getWatchProviders(id: number, region: string = 'GB'): Promise<TMDBWatchProvidersResponse['results'][string] | null> {
+  const data = await fetchFromTMDB<TMDBWatchProvidersResponse>(`/tv/${id}/watch/providers`);
+  return data.results[region] ?? null;
+}
+
+export async function getEnrichedShowData(id: number, region: string = 'GB'): Promise<EnrichedShowData> {
+  const [details, providerData] = await Promise.all([
+    getShowDetails(id),
+    getWatchProviders(id, region),
+  ]);
+
+  return {
+    overview: details.overview,
+    vote_average: details.vote_average,
+    first_air_date: details.first_air_date,
+    genres: details.genres,
+    number_of_seasons: details.number_of_seasons,
+    episode_run_time: details.episode_run_time,
+    providers: providerData?.flatrate ?? [],
+  };
+}
+
+export async function searchShows(query: string): Promise<TMDBShowBasic[]> {
+  if (!query.trim()) return [];
+  const data = await fetchFromTMDB<TMDBResponse<TMDBShowBasic>>('/search/tv', { query });
+  return data.results;
 }
