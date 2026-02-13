@@ -38,14 +38,73 @@ No test framework is currently configured.
 - **"With Food" mode**: Restricts to comedy (35), reality (10764), animation (16) genres
 - **"Free Time" mode**: All genres available, filtered by user selection
 
+## Database (Supabase PostgreSQL)
+
+### `saved_shows` — User's watchlist
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| `id` | uuid (PK) | NO | `gen_random_uuid()` |
+| `user_id` | uuid (FK → auth.users) | NO | |
+| `tmdb_show_id` | integer | NO | |
+| `show_name` | text | NO | |
+| `poster_path` | text | YES | |
+| `status` | text | YES | `'want_to_watch'` |
+| `added_at` | timestamptz | YES | `now()` |
+
+Status CHECK: `want_to_watch`, `watching`, `finished`, `dropped`
+
+### `shows_cache` — Cached TMDB show data
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| `tmdb_show_id` | integer (PK) | NO | |
+| `name` | text | NO | |
+| `overview` | text | YES | |
+| `poster_path` | text | YES | |
+| `vote_average` | numeric | YES | |
+| `first_air_date` | date | YES | |
+| `genres` | integer[] | YES | |
+| `cached_at` | timestamptz | YES | `now()` |
+
+### `user_preferences` — Genre preferences per user
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| `user_id` | uuid (PK, FK → auth.users) | NO | |
+| `preferred_genres` | integer[] | YES | `'{}'` |
+| `excluded_genres` | integer[] | YES | `'{}'` |
+| `created_at` | timestamptz | YES | `now()` |
+| `updated_at` | timestamptz | YES | `now()` |
+
+### `user_watched` — Legacy watch tracking
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| `id` | bigint (PK) | NO | |
+| `userId` | uuid (FK → auth.users) | YES | |
+| `watched_at` | timestamptz | NO | `now()` |
+| `tmdb_id` | bigint | YES | |
+
+### `watch_history` — Detailed watch history with ratings
+| Column | Type | Nullable | Default |
+|--------|------|----------|---------|
+| `id` | uuid (PK) | NO | `gen_random_uuid()` |
+| `user_id` | uuid (FK → auth.users) | NO | |
+| `tmdb_show_id` | integer | NO | |
+| `show_name` | text | NO | |
+| `poster_path` | text | YES | |
+| `rating` | smallint | YES | |
+| `notes` | text | YES | |
+| `watched_at` | timestamptz | YES | `now()` |
+
 ## Environment Variables
 
 Required in `.env.local`:
 - `TMDB_API_KEY` - Get from https://www.themoviedb.org/settings/api
 
-Optional (for future auth features):
+Required for auth & watchlist:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+Optional:
+- `NEXT_PUBLIC_SITE_URL` - Production URL for password reset redirects (defaults to `http://localhost:3000`)
 
 ## Tech Stack
 
@@ -53,4 +112,4 @@ Optional (for future auth features):
 - TypeScript with strict mode
 - Tailwind CSS with custom dark theme
 - next-pwa for PWA support
-- Supabase client installed but not yet integrated
+- Supabase (auth, PostgreSQL database)

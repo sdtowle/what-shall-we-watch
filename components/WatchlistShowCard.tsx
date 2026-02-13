@@ -87,7 +87,7 @@ export default function WatchlistShowCard({
   const providers = enrichedData?.providers?.slice(0, 4) ?? [];
 
   return (
-    <div className="bg-surface rounded-lg shadow-lg overflow-hidden flex">
+    <div className="bg-surface rounded-lg shadow-lg flex">
       {/* Poster */}
       {posterUrl ? (
         <img

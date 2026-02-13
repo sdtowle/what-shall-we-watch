@@ -1,4 +1,4 @@
-export type WatchStatus = 'want_to_watch' | 'watching' | 'dropped';
+export type WatchStatus = 'want_to_watch' | 'watching' | 'finished' | 'dropped';
 
 export interface SavedShow {
   id: string;
@@ -13,5 +13,6 @@ export interface SavedShow {
 export const STATUS_CONFIG: Record<WatchStatus, { label: string; color: string }> = {
   want_to_watch: { label: 'Want to Watch', color: 'bg-primary/20 text-primary' },
   watching: { label: 'Watching', color: 'bg-green-500/20 text-green-400' },
+  finished: { label: 'Finished', color: 'bg-blue-500/20 text-blue-400' },
   dropped: { label: 'Dropped', color: 'bg-red-500/20 text-red-400' },
 };
