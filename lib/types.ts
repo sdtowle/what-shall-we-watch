@@ -89,6 +89,16 @@ export interface EnrichedShowData {
   providers: WatchProvider[];
 }
 
+// Rating types
+export interface UserRating {
+  id: string;
+  user_id: string;
+  tmdb_show_id: number;
+  score: number | null; // 1–10
+  liked: boolean | null;
+  rated_at: string;
+}
+
 // Auth types
 export interface AuthFormState {
   error?: string;

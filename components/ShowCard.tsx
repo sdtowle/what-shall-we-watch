@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { Show } from '@/lib/types';
+import { useState, useEffect } from 'react';
+import { Show, UserRating } from '@/lib/types';
 import TrendingBadge from './TrendingBadge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { addToWatchlist } from '@/app/watchlist/actions';
+import { getUserRating } from '@/app/ratings/actions';
+import RatingModal from './RatingModal';
 
 interface ShowCardProps {
   show: Show;
@@ -16,6 +18,18 @@ export default function ShowCard({ show }: ShowCardProps) {
   const { showToast } = useToast();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [userRating, setUserRating] = useState<UserRating | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    getUserRating(show.id).then(setUserRating);
+  }, [show.id, user]);
+
+  const handleModalClose = () => {
+    setIsRatingModalOpen(false);
+    if (user) getUserRating(show.id).then(setUserRating);
+  };
 
   const handleSave = async () => {
     if (!user) {
@@ -49,6 +63,7 @@ export default function ShowCard({ show }: ShowCardProps) {
       : null;
 
   return (
+    <>
     <div className="animate-bounce-in bg-surface rounded-2xl overflow-hidden shadow-xl max-w-sm w-full mx-auto">
       <div className="flex">
         {posterUrl ? (
@@ -106,10 +121,11 @@ export default function ShowCard({ show }: ShowCardProps) {
             {avgRuntime && <span>{avgRuntime}m/ep</span>}
           </div>
 
+          <div className="mt-1 flex items-center gap-3">
           <button
             onClick={handleSave}
             disabled={saving || saved}
-            className="mt-1 flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
           >
             {saved ? (
               <>
@@ -132,8 +148,41 @@ export default function ShowCard({ show }: ShowCardProps) {
               </>
             )}
           </button>
+          <button
+            onClick={() => {
+              if (!user) {
+                showToast('Log in to rate shows', 'info');
+                return;
+              }
+              setIsRatingModalOpen(true);
+            }}
+            className={`flex items-center gap-1 text-xs transition-colors ${
+              userRating ? 'text-secondary hover:text-secondary/80' : 'text-text-muted hover:text-secondary'
+            }`}
+            title={userRating ? 'Edit your rating' : 'Rate this show'}
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+            </svg>
+            {userRating?.score != null ? userRating.score : 'Rate'}
+          </button>
+          </div>
         </div>
       </div>
     </div>
+    <RatingModal
+      isOpen={isRatingModalOpen}
+      onClose={handleModalClose}
+      tmdbShowId={show.id}
+      showName={show.name}
+      posterPath={show.poster_path}
+      context="discover"
+    />
+    </>
   );
 }
